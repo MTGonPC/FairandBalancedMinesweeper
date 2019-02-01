@@ -44,7 +44,23 @@ public class BoardHandler {
 			}
 		}
 	}
-
+	public void firstClick(int x, int y,long seed) {
+		hiddenBoard[y][x] = ' ';
+		Random rand = new Random(seed);
+		for(int i = 0; i < numOfBombs; i++) {
+			int rx, ry;
+			rx = rand.nextInt(hiddenBoard[0].length);
+			ry = rand.nextInt(hiddenBoard.length);
+			while(inSurrounding(x,y,rx,ry) || hiddenBoard[ry][rx] == 'X') {
+				rx = rand.nextInt(hiddenBoard[0].length);
+				ry = rand.nextInt(hiddenBoard.length);
+			}
+			hiddenBoard[ry][rx] = 'X';
+			
+		}
+		fillNumbers();
+		click(x,y,true);
+	}
 	public void firstClick(int x, int y) {
 		hiddenBoard[y][x] = ' ';
 		Random rand = new Random();
@@ -100,13 +116,7 @@ public class BoardHandler {
 
 		return false;
 	}
-	public void firstClick(int x, int y,long seed) {
-		hiddenBoard[y][x] = ' ';
-		Random rand = new Random(seed);
-		for(int i = 0; i < numOfBombs; i++) {
-				//TODO FILL SEED
-		}
-	}
+	
 	public char[][] getPublicBoard() {
 		return publicBoard;
 	}
