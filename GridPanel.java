@@ -10,14 +10,16 @@ public class GridPanel extends JPanel{
 	private BoardHandler board;
 	private int bombsLeft;
 	private boolean firstClick;
+   private Square[][] buttons;
 	public GridPanel(int width, int height, int numOfBombs) {
 		bombsLeft = numOfBombs;
 		board = new BoardHandler(width, height, numOfBombs);
 		setLayout(new GridLayout(width,height));
+      buttons = new Square[height][width];
 		for(int rows = 0; rows < height; rows++) {
 			for(int cols = 0; cols < width; cols++) {
-				Square button = new Square(cols,rows);
-				add(button);
+				buttons[rows][cols] = new Square(cols,rows);
+            add(buttons[rows][cols]);
 			}
 		}
 		firstClick = false;
@@ -63,7 +65,7 @@ public class GridPanel extends JPanel{
 					
 					else if(!flag){
 						if(firstClick) {
-							board.click(x, y,true);
+							board.click(x, y);
 							setText("" +board.getPublicBoard()[y][x]);
 							setEnabled(false);
 						} else {
@@ -74,11 +76,24 @@ public class GridPanel extends JPanel{
 							setEnabled(false);
 							firstClick = !firstClick;
 						}
+                  if(board.getPublicBoard()[y][x] == ' ') {
+                  for(int i = 0; i < 9; i++) {
+                     try{
+                      if(board.getPublicBoard()[y+BoardHandler.SURROUND[i][1]][x+BoardHandler.SURROUND[i][0]] == '#') {
+                           try{
+                              buttons[y+BoardHandler.SURROUND[i][1]][x+BoardHandler.SURROUND[i][0]].doClick();
+                           }catch(StackOverflowError er) {
+                              return;
+                           }
+                        }
+                     }catch(ArrayIndexOutOfBoundsException ex) {}
+                  }
+               }
+
 					} else {
 						setSelected(true);
 					}
-					
-				}
+									}
 			});
 		}
 		

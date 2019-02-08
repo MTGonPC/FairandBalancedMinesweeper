@@ -2,22 +2,21 @@ import java.awt.Dimension;
 import java.util.Random;
 
 public class BoardHandler {
-	private static final int[][] SURROUND = {
+	protected static final int[][] SURROUND = {
 			{-1,-1}, {0,-1}, {1,-1},
 			{-1, 0}, {0, 0}, {1, 0},
 			{-1, 1}, {0, 1}, {1, 1}
 	};
 	private char [][] publicBoard;
 	private char [][] hiddenBoard;
-	private boolean[][] doubleCheckingBoard;
 	private int numOfBombs;
 	private long seed;
 	public BoardHandler(int width, int height, int numOfBombs) {
-		publicBoard = new char[width][height];
+		publicBoard = new char[height][width];
+      hiddenBoard = new char[height][width];
 		boardSetup(publicBoard);
-		hiddenBoard = publicBoard.clone();
-		doubleCheckingBoard = new boolean[width][height];
-		this.numOfBombs = numOfBombs;
+		boardSetup(hiddenBoard);
+      this.numOfBombs = numOfBombs;
 		
 		
 	}
@@ -44,23 +43,7 @@ public class BoardHandler {
 			}
 		}
 	}
-	public void firstClick(int x, int y,long seed) {
-		hiddenBoard[y][x] = ' ';
-		Random rand = new Random(seed);
-		for(int i = 0; i < numOfBombs; i++) {
-			int rx, ry;
-			rx = rand.nextInt(hiddenBoard[0].length);
-			ry = rand.nextInt(hiddenBoard.length);
-			while(inSurrounding(x,y,rx,ry) || hiddenBoard[ry][rx] == 'X') {
-				rx = rand.nextInt(hiddenBoard[0].length);
-				ry = rand.nextInt(hiddenBoard.length);
-			}
-			hiddenBoard[ry][rx] = 'X';
-			
-		}
-		fillNumbers();
-		click(x,y,true);
-	}
+
 	public void firstClick(int x, int y) {
 		hiddenBoard[y][x] = ' ';
 		Random rand = new Random();
@@ -76,7 +59,7 @@ public class BoardHandler {
 			
 		}
 		fillNumbers();
-		click(x,y,true);
+		click(x,y);
 	}
 	private void fillNumbers() {
 		for(int rows = 0; rows < hiddenBoard.length; rows++) {
@@ -116,33 +99,27 @@ public class BoardHandler {
 
 		return false;
 	}
-	
+	public void firstClick(int x, int y,long seed) {
+		hiddenBoard[y][x] = ' ';
+		Random rand = new Random(seed);
+		for(int i = 0; i < numOfBombs; i++) {
+				//TODO FILL SEED
+		}
+	}
 	public char[][] getPublicBoard() {
 		return publicBoard;
 	}
 	public char[][] getHiddenBoard() {
 		return hiddenBoard;
 	}
-	public void click(int x,int y,boolean need) {
+	public void click(int x,int y) {
 		publicBoard[y][x] = hiddenBoard[y][x];
-		doubleCheckingBoard[y][x] = true;
+		
 		if(publicBoard[y][x] == 'X') {
 			System.out.println("Boom goes your life");
 			System.exit(0);
-		} else if(publicBoard[y][x] == ' '){
-			for(int i = 0; i< 9;i ++) {
-				if(i != 4) {
-					try {
-						if(!doubleCheckingBoard[y+SURROUND[i][1]][x+SURROUND[i][0]]) {
-							click(x+SURROUND[i][0],y+SURROUND[i][1],false);
-						}
-					} catch(ArrayIndexOutOfBoundsException e) {}
-				}
-			}
 		}
-		if(need) {
-			doubleCheckingBoard = new boolean[hiddenBoard.length][hiddenBoard[0].length];
-		}
+		
 	}
 	public void debug(char[][] charArray) {
 		for(int rows = 0; rows < charArray.length; rows++) {
