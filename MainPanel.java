@@ -14,10 +14,8 @@ public class MainPanel extends JPanel {
          try{
             x = Integer.parseInt(JOptionPane.showInputDialog("size:"));
             y = x;
-            bombs = Integer.parseInt(JOptionPane.showInputDialog("bombs:"));
-            if(x == -1 || y == -1 || bombs == -1) {
-               System.exit(0);
-            }
+            bombs = (int) (x*y*0.4);
+            //bombs = Integer.parseInt(JOptionPane.showInputDialog("Bombs"));
          } catch(NumberFormatException ex) {
             x= 0;y=0;bombs=0;
          }
